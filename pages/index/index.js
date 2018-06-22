@@ -45,7 +45,7 @@ Page({
     }
     wx.showLoading();
     var cityname = common.init();
-    console.log("城市名" + common.init());
+    console.log("城市名: "+cityname)
     this.setData({
       'theWeather.currentCity': cityname
     })

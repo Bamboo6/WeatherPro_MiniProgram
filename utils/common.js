@@ -7,7 +7,7 @@ var bamp = require('bmap-wx.js');
 function init(){
   // 首先查看是不是有数据
   try {
-    var BMap = new bamp.BMapWX({
+    var BMap = new bmap.BMapWX({
       ak: '2FAbr0aHgZETSvXUzXHCC6qyYVZqEGzk'
     });
     var fail = function(data) {
@@ -25,8 +25,6 @@ function init(){
         var weatherData = data.currentWeather[0];
           weatherData.fullData = data.originalData.results[0];
           weatherData.location = weatherData.currentCity;
-          console.log("城市城市名字common.js" + weatherData.location)
-          console.log("城市城市名字common.js222" + weatherData.currentCity)
           cityBank.push(weatherData);
           homeIndex = 1;
           try {

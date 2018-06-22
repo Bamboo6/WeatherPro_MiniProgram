@@ -1,7 +1,7 @@
 <!--pages/add/add.wxml-->
 <view class='search-box'>
-  <input placeholder = "请输入城市名称" bindtap='searchInput'/>
-  <icon  type='search' class='search' bindtap='searchCity'/>
+  <input placeholder = "请输入城市名称" bindinput='searchInput'/>
+  <icon type='search' class='search' bindtap='searchCity'/>
 </view>
 
 <text class='paneltitle'>
