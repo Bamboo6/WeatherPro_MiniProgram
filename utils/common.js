@@ -21,6 +21,7 @@ function init(){
       return cityBank[index].currentCity
     } else {
       console.log("没有缓存");
+      var location = "";
       var success = function(data) {
         var weatherData = data.currentWeather[0];
           weatherData.fullData = data.originalData.results[0];
@@ -30,6 +31,8 @@ function init(){
           try {
             wx.getStorageSync('citys', cityBank);
             wx.getStorageSync('index', homeIndex);
+            location = weatherData.currentCity;
+            console.log("common.js" + location);
             return weatherData.currentCity;
           } catch (e) {
           }

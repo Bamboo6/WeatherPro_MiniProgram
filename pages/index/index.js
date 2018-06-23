@@ -27,7 +27,7 @@ Page({
       wind: " 无风 "
     },
     cityMenus: [],
-    today: "2018-06-20",
+    today: "",
     daylight: true,
     wall: "/images/clearday"
   },
@@ -47,7 +47,8 @@ Page({
     var cityname = common.init();
     console.log("index.js城市名: "+cityname)
     this.setData({
-      'theWeather.currentCity': cityname
+      'theWeather.currentCity': cityname,
+      'today': common.getToday()
     })
     var BMap = new bmap.BMapWX({
       ak: '2FAbr0aHgZETSvXUzXHCC6qyYVZqEGzk'
@@ -73,6 +74,28 @@ Page({
       desc: '',
       path: '/pages/index/index'
     }
+  },
+  
+  del: function (e) {
+    var itemId = e.target.id;
+    if (itemId == "") {
+      console.log("id 空着")
+      return;
+    }
+    common.getCity().splice(itemId, 1)
+    this.setData({
+      // 'theWeather.currentCity': common.getCity()[0].currentCity,
+      'theWeather.currentCity': this.data.theWeather.currentCity
+    })
+    wx.setStorageSync('citys', common.getCity());
+    var BMap = new bmap.BMapWX({
+      ak: '2FAbr0aHgZETSvXUzXHCC6qyYVZqEGzk'
+    });
+    BMap.weather({
+      city: this.data.theWeather.currentCity,
+      fail: this.fail,
+      success: this.success
+    });
   },
 
   setMenuNatural: function(normal){
@@ -115,7 +138,7 @@ Page({
       return;
     }
     var theCity = common.getCity()[itemId];
-    console.log("index：theCity");
+    console.log("index.js-menuTap：theCity");
     console.log(theCity);
 
     this.setData({
@@ -137,9 +160,80 @@ Page({
       title: '城市天气搜索失败',
       content: '未找到' + this.data.theWeather.currentCity + '的天气预报信息',
       showCancel: false,
-      confirmText: '返回'
+      confirmText: '返回',
+      success: function (res) {
+        var nowlocation = "";
+        wx.getLocation({   // 利用微信选择位置 API ，获得经纬度信息  
+          success: function (lb) {
+            console.log("地理位置")
+            console.log(lb)
+            var addressData = lb
+            wx.request({ // 利用百度地图API，将微信获得的经纬度传给百度
+              url: 'https://api.map.baidu.com/geocoder/v2/?ak=2FAbr0aHgZETSvXUzXHCC6qyYVZqEGzk&location=' + lb.latitude + ',' + lb.longitude + '&output=json&coordtype=wgs84ll',
+              data: {},
+              header: {
+                'Content-Type': 'application/json'
+              },
+              success: function (res) {
+                console.log(res.data.result);
+                nowlocation = res.data.result.addressComponent.city;
+                wx.redirectTo({
+                  url: '../index/index?name=' + nowlocation,
+                })
+              },
+              fail: function () {
+                // fail
+              },
+              complete: function () {
+                // complete
+              }
+            })
+          },
+          cancel: function (lb) {
+          },
+          fail: function (lb) {
+            console.log(lb)
+          }
+        })
+        
+      }
     })
     wx.hideLoading();
+  },
+
+  location: function () {
+    wx.chooseLocation({   // ①.利用微信选择位置API，获得经纬度信息  
+      success: function (lb) {
+        console.log("地理位置")
+        console.log(lb)
+        that.data.addressData = lb
+        wx.request({ // ②百度地图API，将微信获得的经纬度传给百度，获得城市等信息
+          url: 'https://api.map.baidu.com/geocoder/v2/?ak=2FAbr0aHgZETSvXUzXHCC6qyYVZqEGzk&location=' + lb.latitude + ',' + lb.longitude + '&output=json&coordtype=wgs84ll',
+          data: {},
+          header: {
+            'Content-Type': 'application/json'
+          },
+          success: function (res) {
+            console.log(res.data.result);
+            console.log(res.data.result.addressComponent.city + res.data.result.addressComponent.district);
+            // that.setData({
+            //   addressAll: res.data.result.addressComponent.city + res.data.result.addressComponent.district + "·" + lb.name //③.我们将微信得到的位置名称“故宫博物馆”与百度地图API得到的“北京市东城区”合并显示在页面上。
+            // })
+          },
+          fail: function () {
+            // fail
+          },
+          complete: function () {
+            // complete
+          }
+        })
+      },
+      cancel: function (lb) {
+      },
+      fail: function (lb) {
+        console.log(lb)
+      }
+    })
   },
 
   success: function(data) {
@@ -167,6 +261,7 @@ Page({
     weatherData.pmpm = common.pmText(weatherData.pm25);
 
     common.refreshCity(weatherData);
+    console.log(weatherData);
     this.setData({
       theWeather: weatherData,
       today: common.getToday,

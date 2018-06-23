@@ -33,6 +33,12 @@ page{
   width:58rpx;
   height: 58rpx;
 }
+.menu-del-icon{
+  float: left;
+  margin: 7rpx 12rpx;
+  width:58rpx;
+  height: 58rpx;
+}
 .menulabel{
   line-height: 48rpx;
   margin: 12rpx;

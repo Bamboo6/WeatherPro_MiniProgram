@@ -11,7 +11,7 @@
 		"newFeature": true
 	},
 	"compileType": "miniprogram",
-	"libVersion": "2.1.0",
+	"libVersion": "2.1.1",
 	"appid": "wx3599c412069d26f5",
 	"projectname": "WeatherPro",
 	"isGameTourist": false,

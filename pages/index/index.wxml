@@ -2,6 +2,7 @@
 <view class="menu" animation="{{animationM}}" style="right:{{gogoright}}%">
   <scroll-view scroll-y="true" class='menu-scroll'>
     <view class="menu-view" wx:for="{{cityMenus}}" wx:key="unique">
+      <image class='menu-del-icon' src='../../images/del.png' bindtap="del" id="{{index}}"></image>
       <image wx:if="{{item.icon == 0}}" class='menu-icon' src='../../images/position.png'></image>
       <image wx:elif="{{item.icon == 1}}" class='menu-icon' src="../../images/positiongrey.png"></image>
       <text class="menulabel" bindtap="menuTap" id="{{index}}">{{item.name}}</text>
@@ -61,7 +62,7 @@
         <view class="aqi-box">
           <text class='paneltitle'>空气质量</text>
           <text class='aqitext'>空气质量值{{theWeather.pm25}}</text>
-          <text class='sqitext'>{{theWeather.pmpm}}</text>
+          <text class='aqitext'>{{theWeather.pmpm}}</text>
           <image src='../../images/good.png' wx:if="{{theWeather.pm25<=75}}"></image>
           <image src="../../images/normal.png" wx:elif="{{theWeather.pm25>75&&theWeather.pm25<=150}}"></image>
           <image src='../../images/bad.png' wx:elif="{{theWeather.pm25>150}}"></image>
