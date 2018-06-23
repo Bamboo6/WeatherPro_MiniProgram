@@ -3,7 +3,7 @@
 //  Copyright © 2018年 LT. All rights reserved.
 var cityBank = [];
 var homeIndex = 0;
-var bamp = require('bmap-wx.js');
+var bmap = require('bmap-wx.js');
 function init(){
   // 首先查看是不是有数据
   try {
@@ -123,7 +123,20 @@ function addCity(weatherData) {
   }
   if (thatIndex == -1) {
     cityBank.push(weatherData);
-    wx.setStorageSync('city', cityBank);
+    wx.setStorageSync('citys', cityBank);
+  }
+}
+
+function delCity(weatherData) {
+  var thatIndex = -1;
+  for (var i = 0; i < cityBank.length; i++) {
+    if (cityBank[i].currentCity == weatherData.currentCity) {
+      thatIndex = i;
+    }
+  }
+  if (thatIndex == -1) {
+    cityBank.push(weatherData);
+    wx.removeStorageSync('citys', cityBank);
   }
 }
 

@@ -45,7 +45,7 @@ Page({
     }
     wx.showLoading();
     var cityname = common.init();
-    console.log("城市名: "+cityname)
+    console.log("index.js城市名: "+cityname)
     this.setData({
       'theWeather.currentCity': cityname
     })
@@ -115,6 +115,8 @@ Page({
       return;
     }
     var theCity = common.getCity()[itemId];
+    console.log("index：theCity");
+    console.log(theCity);
 
     this.setData({
       'theWeather.currentCity': theCity.currentCity
