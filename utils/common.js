@@ -16,11 +16,14 @@ function init(){
     var value = wx.getStorageSync('citys')
     var index = wx.getStorageSync('index')
     if (value) {
+      // Do something with return value
       console.log("有缓存");
       cityBank = value;
+      // 返回上次关闭时的城市
       return cityBank[index].currentCity
     } else {
       console.log("没有缓存");
+      // 调用应用实例的方法获取全局数据
       var location = "";
       var success = function(data) {
         var weatherData = data.currentWeather[0];
@@ -33,20 +36,24 @@ function init(){
             wx.getStorageSync('index', homeIndex);
             location = weatherData.currentCity;
             console.log("common.js" + location);
+            // 返回手机定位得出的城市
             return weatherData.currentCity;
           } catch (e) {
           }
       }
+      // 发起 weather 请求
       BMap.weather({
         fail: fail,
         success: success
       });
     }
   } catch (e) {
+    // Do something when catch error
     console.log("缓存有误");
   }
 }
 
+// 获取今日日期
 function getToday(){
   var myDate = new Date();
   var year = myDate.getFullYear();
@@ -59,6 +66,7 @@ function windHelper(zhText){
   return zhText;
 }
 
+// pm2.5数值对应的空气级别
 function pmText(index) {
   if (index <= 35){
     return "空气质量优";
@@ -79,6 +87,7 @@ function getHomeData() {
   return cityBank[homeIndex];
 }
 
+// 获取城市列表
 function getCityList() {
   var citys = [];
   for (var i = 0; i < cityBank.length; i++) {
@@ -86,7 +95,8 @@ function getCityList() {
     city.name = cityBank[i].currentCity;
     city.index = i;
     if (homeIndex == i) {
-      city.icon = 0;
+      // 0 当前位置图标，1 普通城市图标
+      city.icon = 0; 
     } else {
       city.icon = 1;
     }
@@ -99,6 +109,7 @@ function getCity(){
   return cityBank;
 }
 
+// 刷新城市列表
 function refreshCity(weatherData){
   homeIndex = wx.getStorageSync('index');
   var thatIndex = -1;
@@ -117,6 +128,7 @@ function refreshCity(weatherData){
   wx.setStorageSync('index', homeIndex);
 }
 
+// 添加城市
 function addCity(weatherData) {
   var thatIndex = -1;
   for (var i = 0; i < cityBank.length; i++) {
@@ -130,24 +142,13 @@ function addCity(weatherData) {
   }
 }
 
-function delCity(weatherData) {
-  var thatIndex = -1;
-  for (var i = 0; i < cityBank.length; i++) {
-    if (cityBank[i].currentCity == weatherData.currentCity) {
-      thatIndex = i;
-    }
-  }
-  if (thatIndex == -1) {
-    cityBank.push(weatherData);
-    wx.removeStorageSync('citys', cityBank);
-  }
-}
-
+// 直辖市、省会城市列表
 function readXJCitys(){
   var xjCitys = ["北京市", "天津市", "上海市", "重庆市", "石家庄市", "郑州市", "武汉市", "长沙市", "南京市", "南昌市", "沈阳市", "长春市", "哈尔滨市", "西安市", "太原市", "济南市", "成都市", "西宁市", "合肥市", "海口市", "广州市", "贵阳市", "杭州市", "福州市", "兰州市", "昆明市", "拉萨市", "银川市", "南宁市", "乌鲁木齐市", "呼和浩特市", "香港市", "澳门市"]
   return xjCitys;
 }
 
+// 天气图标
 function iconChanger(zhText) {
   var status = zhText;
   var statusData = {};
@@ -174,6 +175,8 @@ function iconChanger(zhText) {
   statusData.icon = zhText;
   return statusData;
 }
+
+// 将一些公共的代码抽离成为一个单独的 js 文件，作为一个模块，通过 module.exports 对外暴露接口
 module.exports = {
   readXJCitys: readXJCitys,
   init: init,

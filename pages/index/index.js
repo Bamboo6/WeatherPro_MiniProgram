@@ -8,6 +8,10 @@ var common = require('../../utils/common.js');
 var lastcity = '';
 
 Page({
+
+  /**
+   * 页面的初始数据
+   */
   data: {
     gogoleft: 0,
     gogoright: -50,
@@ -32,6 +36,9 @@ Page({
     wall: "/images/clearday"
   },
 
+  /**
+   * 生命周期函数--监听页面加载
+   */
   onLoad: function (options) {
     var thisMoment = new Date().getHours();
     if (thisMoment > 18 || thisMoment < 6) {
@@ -44,8 +51,10 @@ Page({
       })
     }
     wx.showLoading();
+    // 检查缓存、获取定位
     var cityname = common.init();
     console.log("index.js城市名: "+cityname)
+    // 获取城市名、今日日期
     this.setData({
       'theWeather.currentCity': cityname,
       'today': common.getToday()
@@ -65,6 +74,7 @@ Page({
       success: this.success
     });
   },
+
   /**
    * 用户点击右上角分享
    */
@@ -76,6 +86,7 @@ Page({
     }
   },
   
+  // 删除某条缓存
   del: function (e) {
     var itemId = e.target.id;
     if (itemId == "") {
@@ -91,6 +102,7 @@ Page({
     var BMap = new bmap.BMapWX({
       ak: '2FAbr0aHgZETSvXUzXHCC6qyYVZqEGzk'
     });
+    // 发起 weather 请求
     BMap.weather({
       city: this.data.theWeather.currentCity,
       fail: this.fail,
@@ -98,6 +110,7 @@ Page({
     });
   },
 
+  // 边栏菜单动画
   setMenuNatural: function(normal){
     var animationW = wx.createAnimation({
       duration: 200
@@ -123,12 +136,14 @@ Page({
     })
   },
 
+  // 跳转添加页
   setAdd: function() {
     wx.navigateTo({
       url: '../add/add'
     })
   },
 
+  // 加载边栏菜单
   menuTap: function(e) {
     wx.showLoading();
     var itemId = e.target.id;
@@ -155,6 +170,7 @@ Page({
     });
   },
 
+
   fail: function (data) {
     wx.showModal({
       title: '城市天气搜索失败',
@@ -163,18 +179,20 @@ Page({
       confirmText: '返回',
       success: function (res) {
         var nowlocation = "";
-        wx.getLocation({   // 利用微信选择位置 API ，获得经纬度信息  
+        wx.getLocation({   
+          // 利用微信选择位置 API ，获得经纬度信息  
           success: function (lb) {
-            console.log("地理位置")
+            console.log("index.js-fail-getLocation:")
             console.log(lb)
-            var addressData = lb
-            wx.request({ // 利用百度地图API，将微信获得的经纬度传给百度
+            wx.request({ 
+              // 利用百度地图 API ，将微信获得的经纬度传给百度地图
               url: 'https://api.map.baidu.com/geocoder/v2/?ak=2FAbr0aHgZETSvXUzXHCC6qyYVZqEGzk&location=' + lb.latitude + ',' + lb.longitude + '&output=json&coordtype=wgs84ll',
               data: {},
               header: {
                 'Content-Type': 'application/json'
               },
               success: function (res) {
+                console.log("index.js-fail-getLocation-request:")
                 console.log(res.data.result);
                 nowlocation = res.data.result.addressComponent.city;
                 wx.redirectTo({
@@ -201,46 +219,11 @@ Page({
     wx.hideLoading();
   },
 
-  location: function () {
-    wx.chooseLocation({   // ①.利用微信选择位置API，获得经纬度信息  
-      success: function (lb) {
-        console.log("地理位置")
-        console.log(lb)
-        that.data.addressData = lb
-        wx.request({ // ②百度地图API，将微信获得的经纬度传给百度，获得城市等信息
-          url: 'https://api.map.baidu.com/geocoder/v2/?ak=2FAbr0aHgZETSvXUzXHCC6qyYVZqEGzk&location=' + lb.latitude + ',' + lb.longitude + '&output=json&coordtype=wgs84ll',
-          data: {},
-          header: {
-            'Content-Type': 'application/json'
-          },
-          success: function (res) {
-            console.log(res.data.result);
-            console.log(res.data.result.addressComponent.city + res.data.result.addressComponent.district);
-            // that.setData({
-            //   addressAll: res.data.result.addressComponent.city + res.data.result.addressComponent.district + "·" + lb.name //③.我们将微信得到的位置名称“故宫博物馆”与百度地图API得到的“北京市东城区”合并显示在页面上。
-            // })
-          },
-          fail: function () {
-            // fail
-          },
-          complete: function () {
-            // complete
-          }
-        })
-      },
-      cancel: function (lb) {
-      },
-      fail: function (lb) {
-        console.log(lb)
-      }
-    })
-  },
-
   success: function(data) {
     wx.hideLoading();
     var weatherData = data.currentWeather[0];
     weatherData.fullData = data.originalData.results[0];
-
+    
     var date = weatherData.date;
     date = date.substring(date.indexOf("：") + 1, date.indexOf("℃"));
     weatherData.date = date;
